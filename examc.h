@@ -64,37 +64,36 @@ static int examc_nfail;
 #define EXAMC_CHECK(condition) \
  do \
  {\
-	 if (condition) examc_npass++;\
-	 else examc_nfail++; \
+   if (condition) examc_npass++;\
+   else examc_nfail++; \
  }\
  while (0); 
 
 int main(int nargs, char ** args) 
 {
 
-	struct examc_q ** q =  &__start_examc; 
+  struct examc_q ** q =  &__start_examc; 
   struct examc_q ** qend  =  &__stop_examc; 
-	int itest = 0; 
-	while (q!=qend) 
+  int itest = 0; 
+  while (q!=qend) 
   {
-		int current_npass = examc_npass; 
-		int current_nfail = examc_nfail; 
-		(*q)->fn(); 
+    int current_npass = examc_npass; 
+    int current_nfail = examc_nfail; 
+    (*q)->fn(); 
     if (current_npass == examc_npass && current_nfail == examc_nfail) 
     {
       printf("WARNING: test %s has no check! Skipping.", (*q)->name); 
-
     }
-		int passed = examc_npass > current_npass;
+    int passed = examc_npass > current_npass;
     
-		printf("[%d] %s: %s\n", itest++, (*q)->name, passed ? "PASSED" : "FAILED"); 
-		q++; 
-	} 
+    printf("[%d] %s: %s\n", itest++, (*q)->name, passed ? "PASSED" : "FAILED"); 
+    q++; 
+  } 
   printf ("SUMMARY:  %d/%d tests passed\n", examc_npass, examc_npass + examc_nfail); 
   return examc_nfail; 
 }
-	
-	
+  
+  
 
 #endif 
 
