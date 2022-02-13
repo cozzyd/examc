@@ -7,4 +7,4 @@ test: $(prog)
 	@./$(prog) 
 
 clean:
-	rm -f prog
+	rm -f $(prog)
