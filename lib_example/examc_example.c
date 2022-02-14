@@ -13,7 +13,6 @@ EXAMC_TEST(should_pass)
 EXAMC_TEST(should_fail)
 {
   EXAMC_CHECK(2+2 == 5) 
-  EXAMC_CHECK(2+3 == 5) //can have more than one check per test, but test will be marked as failing for any that fail. 
 }
 
 // If you want to use a fancier name for your test, you can, but it still needs an identifier (which is useful for debugging your test anyway). 

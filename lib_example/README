@@ -1,0 +1,10 @@
+This example shows how you can spread tests interwoven with library code. You
+can add tests in multiple object files, just make sure you #define
+EXAMC_NO_MAIN before including examc.h. Then you can link all your object files
+into an executable that doesn't have EXAMC_NO_MAIN defined (and can also define
+additional tests, of course, but that's not necessary).  Note that in this
+case, we aren't linking against the shared library (that would probalby require
+fancy relocations or something? I don't know maybe it's easy but I don't know
+how to do it offhand), but against the object files. If using a static library,
+then obviously you can do that (it's roughly the same thing after all). 
+

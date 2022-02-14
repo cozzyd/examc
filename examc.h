@@ -33,6 +33,7 @@ SOFTWARE.
 #include <stdio.h> 
 
 
+#define EXAMC_VERSION "0.1"
 #define EXAMC_SECTION __attribute__((section("examc")))
 
 
@@ -56,42 +57,66 @@ void what()
 
 extern struct examc_q* __start_examc;
 extern struct examc_q* __stop_examc;
-static int examc_npass;
-static int examc_nfail;
+
+#ifdef EXAMC_NO_MAIN
+extern int examc_npass;
+extern int examc_nfail;
+#else
+int examc_npass;
+int examc_nfail;
+#endif
 
 
+#define EXAMC_FAIL(file,line,expr) printf("\n     failing check:  %s (%s:%d) ",expr,  file ,line)
 
 #define EXAMC_CHECK(condition) \
  do \
  {\
    if (condition) examc_npass++;\
-   else examc_nfail++; \
+   else\
+   {\
+     EXAMC_FAIL(__FILE__,__LINE__, #condition);\
+     examc_nfail++; \
+   }\
  }\
  while (0); 
 
+
+#ifndef EXAMC_NO_MAIN
 int main(int nargs, char ** args) 
 {
 
   struct examc_q ** q =  &__start_examc; 
   struct examc_q ** qend  =  &__stop_examc; 
   int itest = 0; 
+  int npass = 0;
+  int ntotal = 0; 
+  int ntotal_parts = 0;
+  printf("Running tests (examc %s)...\n---\n", EXAMC_VERSION);
   while (q!=qend) 
   {
     int current_npass = examc_npass; 
     int current_nfail = examc_nfail; 
+    printf("[%d] %s: ", itest++, (*q)->name); 
     (*q)->fn(); 
-    if (current_npass == examc_npass && current_nfail == examc_nfail) 
+    int total_parts = examc_npass + examc_nfail - current_npass - current_nfail; 
+    if (!total_parts) 
     {
-      printf("WARNING: test %s has no check! Skipping.", (*q)->name); 
+      printf("  !WARNING: test \"%s\" has no check! Skipping.", (*q)->name); 
     }
-    int passed = examc_npass > current_npass;
+    int failed = examc_nfail - current_nfail;
+    npass+= !failed; 
+    ntotal_parts+= total_parts; 
+    ntotal++; 
     
-    printf("[%d] %s: %s\n", itest++, (*q)->name, passed ? "PASSED" : "FAILED"); 
+    printf("\n  %s (%d/%d parts passed) \n-----\n", failed ? "FAILED" : "PASSED", total_parts - failed, total_parts); 
+
     q++; 
   } 
-  printf ("SUMMARY:  %d/%d tests passed\n", examc_npass, examc_npass + examc_nfail); 
+  printf ("SUMMARY:  %d/%d tests passed (%d/%d parts) \n", npass, ntotal, examc_npass, ntotal_parts); 
   return examc_nfail; 
 }
+#endif
   
   
 
